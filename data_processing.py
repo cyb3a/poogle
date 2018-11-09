@@ -14,7 +14,7 @@ data = json.load(raw)
 # Tokenize
 words = []
 for report in data:
-    words.append((report['URL'], word_tokenize(report['Title']+report['Content'])))
+    words.append((report['URL'], word_tokenize(report['Title']+" "+report['Content'])))
 
 ## Remove Stopwords
 
