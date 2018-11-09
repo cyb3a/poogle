@@ -8,7 +8,14 @@
 import scrapy
 
 
-class PolrepcrawlItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class PoliceReport(scrapy.Item):
+    _id = scrapy.Field()
+    title = scrapy.Field()
+    date = scrapy.Field()
+    location = scrapy.Field()
+    content = scrapy.Field()
+    url = scrapy.Field()
+
+class PoliceReportURL(scrapy.Item):
+    url = scrapy.Field()
+
