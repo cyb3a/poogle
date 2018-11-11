@@ -3,7 +3,6 @@
 import json
 import nltk
 from nltk import word_tokenize
-from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer  # Support for German language stemming
 
 nltk.download('punkt')
@@ -37,6 +36,5 @@ normed = []
 for tokens in words:
     normed.append((tokens[0], [stemmer.stem(w) for w in tokens[1]]))  # lowercase
 
-# Remove Stopwords & Punctuation
 print(normed)
 ## Count Tokens
