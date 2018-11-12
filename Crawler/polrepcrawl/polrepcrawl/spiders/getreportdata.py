@@ -19,7 +19,7 @@ class GetreportdataSpider(scrapy.Spider):
         if filename:
             with open(filename, 'r') as fd:
                 policeReportUrls = ["{base}/polizei/polizeimeldungen/pressemitteilung.{id}.php".format(
-                    base=BASE_URL, id=urlId) for urlId in fd.readlines()]
+                    base=BASE_URL, id=urlId) for urlId in fd.read().splitlines()]
                 self.start_urls = policeReportUrls
 
 

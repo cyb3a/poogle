@@ -6,6 +6,9 @@ class GetreporturlsSpider(scrapy.Spider):
     """
     Get all police report url ids from https://www.berlin.de/polizei/polizeimeldungen/archiv/*
     * is a wildcard for a year like 2018
+
+    Run spider with:
+    > scrapy crawl getreporturls
     """
     name = 'getreporturls'
 
@@ -17,7 +20,8 @@ class GetreporturlsSpider(scrapy.Spider):
         # BASE_URL+'/polizei/polizeimeldungen/archiv/2015/',
         # BASE_URL+'/polizei/polizeimeldungen/archiv/2016/',
         # BASE_URL+'/polizei/polizeimeldungen/archiv/2017/',
-        BASE_URL+'/polizei/polizeimeldungen/archiv/2018/']
+        BASE_URL+'/polizei/polizeimeldungen/archiv/2018/'
+        ]
 
     def parse(self, response):
         """
