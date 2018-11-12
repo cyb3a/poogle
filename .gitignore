@@ -1,5 +1,7 @@
 # Custom
 Crawler/polrepcrawl/policereport-urlids.txt
+Crawler/polrepcrawl/urls-no-id.txt
+Crawler/polrepcrawl/policereports.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

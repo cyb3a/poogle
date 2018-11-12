@@ -20,7 +20,7 @@ class GetreportdataSpider(scrapy.Spider):
     Berlin districts as set. Retrieved from: https://www.berlin.de/special/immobilien-und-wohnen/stadtteile/uebersicht-nach-bezirken/ 
     """
     BERLIN_DISTRICTS = {'Mitte', 'Friedrichshain-Kreuzberg', 'Pankow', 'Charlottenburg-Wilmersdorf', 'Spandau', 'Steglitz-Zehlendorf',
-                        'Tempelhof-Schöneberg', 'Neukölln', 'Treptow-Köpenick', 'Marzahn-Hellersdorf', 'Lichtenberg', 'Reinickendorf '}
+                        'Tempelhof-Schöneberg', 'Neukölln', 'Treptow-Köpenick', 'Marzahn-Hellersdorf', 'Lichtenberg', 'Reinickendorf'}
 
     allowed_domains = ['berlin.de']
 
