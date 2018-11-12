@@ -18,9 +18,10 @@ class GetreportdataSpider(scrapy.Spider):
     def __init__(self, filename=None):
         if filename:
             with open(filename, 'r') as fd:
-                policeReportUrls = ["{base}/polizei/polizeimeldungen/pressemitteilung.{id}.php".format(
-                    base=BASE_URL, id=urlId) for urlId in fd.read().splitlines()]
+                policeReportUrls = ["https://www.berlin.de/polizei/polizeimeldungen/pressemitteilung.{id}.php".format(
+                    id=urlId) for urlId in fd.read().splitlines()]
                 self.start_urls = policeReportUrls
+                print(policeReportUrls)
 
 
     def parse(self, response):
