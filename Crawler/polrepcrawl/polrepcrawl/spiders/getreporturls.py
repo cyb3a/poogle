@@ -42,4 +42,4 @@ class GetreporturlsSpider(scrapy.Spider):
         nextPage = pagination.xpath(
             'ul/li[contains(@class,"pager-item-next") and not(contains(@class,"disabled"))]/a/@href').extract_first()
         if nextPage is not None:
-            yield response.follow((BASE_URL+nextPage), callback=self.parse)
+            yield response.follow((GetreporturlsSpider.BASE_URL+nextPage), callback=self.parse)
