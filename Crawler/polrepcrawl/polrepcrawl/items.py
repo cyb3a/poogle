@@ -16,6 +16,3 @@ class PoliceReport(scrapy.Item):
     content = scrapy.Field()
     url = scrapy.Field()
 
-class PoliceReportURL(scrapy.Item):
-    url = scrapy.Field()
-
