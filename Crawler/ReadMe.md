@@ -28,3 +28,10 @@ Run in terminal:
 ```
 scrapy shell
 ```
+
+## getOnePage
+
+Is a prototype to test features before merging with the crawler. Run with:
+'''
+scrapy runspider polrepcrawl/spiders/getOnePage.py
+'''
