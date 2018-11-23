@@ -21,7 +21,7 @@ class GetreporturlsSpider(scrapy.Spider):
         BASE_URL+'/polizei/polizeimeldungen/archiv/2016/',
         BASE_URL+'/polizei/polizeimeldungen/archiv/2017/',
         BASE_URL+'/polizei/polizeimeldungen/archiv/2018/'
-        ]
+    ]
 
     def parse(self, response):
         """
@@ -33,23 +33,26 @@ class GetreporturlsSpider(scrapy.Spider):
 
         """
         We split the paths in two categories
-        * onePoliceReportPaths: Each path covers only one police report
-        * multiplePoliceReportPaths: Each path covers multiple police reports 
+        * locationPoliceReportPaths: There is location information about the police report in the header 
+        * noLocationPoliceReportPaths: There is no location information about the police report in the header (probably there is in content and 
+            probably because multiple reports are grouped)
 
         And safe them in different files
         """
 
-        relevant = response.xpath("//div[contains(@class,'html5-section') and contains(@class,'body')]/ul/li")
+        relevant = response.xpath(
+            "//div[contains(@class,'html5-section') and contains(@class,'body')]/ul/li")
 
-        onePoliceReportPaths = relevant.xpath("div[span/strong[contains(text(),'Ereignisort')]]/a/@href").extract()
-        multiplePoliceReportPaths =  relevant.xpath("div[not(span)]/a/@href").extract()
+        locationPoliceReportPaths = relevant.xpath(
+            "div[span/strong[contains(text(),'Ereignisort')]]/a/@href").extract()
+        noLocationPoliceReportPaths = relevant.xpath(
+            "div[not(span)]/a/@href").extract()
 
-
-        with open('one-policereport-paths.txt', 'a') as fd:
-            for path in onePoliceReportPaths:
+        with open('loc-policereport-paths.txt', 'a') as fd:
+            for path in locationPoliceReportPaths:
                 fd.write("%s\n" % path)
-        with open('multiple-policereport-paths.txt', 'a') as fd:
-            for path in multiplePoliceReportPaths:
+        with open('noloc-policereport-paths.txt', 'a') as fd:
+            for path in noLocationPoliceReportPaths:
                 fd.write("%s\n" % path)
         """
         Get next page

@@ -12,7 +12,7 @@ class PoliceReport(scrapy.Item):
     Title = scrapy.Field()
     Header = scrapy.Field()
     Content = scrapy.Field()
-    IsGroup = scrapy.Field()
+    IsLocationInHeader = scrapy.Field()
     URL = scrapy.Field()
     CreatedAt = scrapy.Field()
 

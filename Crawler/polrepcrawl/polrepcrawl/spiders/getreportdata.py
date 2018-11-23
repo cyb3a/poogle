@@ -10,8 +10,7 @@ class GetreportdataSpider(scrapy.Spider):
     Get 'relevant' data from a policereport
 
     Run spider with:
-    > scrapy crawl getreportdata -a filename=one-policereport-paths.txt -a isGroup=false
-    > scrapy crawl getreportdata -a filename=multiple-policereport-paths.txt -a isGroup=true
+    > scrapy crawl getreportdata
     """
     name = 'getreportdata'
 
@@ -19,13 +18,14 @@ class GetreportdataSpider(scrapy.Spider):
 
     allowed_domains = ['berlin.de']
 
-    def __init__(self, filename, isGroup):
-        self.isGroup = isGroup
-        if filename:
-            with open(filename, 'r') as fd:
-                policeReportUrls = ["https://www.berlin.de{path}".format(
-                    path=policeReportPath) for policeReportPath in fd.read().splitlines()]
-                self.start_urls = policeReportUrls
+    def start_requests(self):
+        with open('loc-policereport-paths.txt', 'r') as fd:
+            for policeReportPath in fd.read().splitlines():
+                yield scrapy.Request("https://www.berlin.de{path}".format(path=policeReportPath), meta={'IsLocationInHeader': 'true'})
+
+        with open('noloc-policereport-paths.txt', 'r') as fd:
+            for policeReportPath in fd.read().splitlines():
+                yield scrapy.Request("https://www.berlin.de{path}".format(path=policeReportPath), meta={'IsLocationInHeader': 'false'})
 
     def parse(self, response):
 
@@ -37,43 +37,44 @@ class GetreportdataSpider(scrapy.Spider):
             """
             Filter police report from whole web page
             """
-            relevant = response.xpath(
+            relevant= response.xpath(
                 '//div[contains(@class,"html5-section") and contains(@class, "article")]')
 
             """
             Title of police report
             """
-            title = relevant.xpath(
+            title=relevant.xpath(
                 'descendant::h1[contains(@class,"title")]/text()').extract_first()
 
             """
             Contains date and location
             """
-            policeReportHeader = relevant.xpath(
+            policeReportHeader=relevant.xpath(
                 'descendant::div[contains(@class,"polizeimeldung")]/text()').extract()
 
-            header = " ".join(policeReportHeader) 
+            header=" ".join(policeReportHeader)
 
             """
             Content of police report as one string
             - Excluded police report nr
             """
-            rawContent = relevant.xpath(
+            rawContent=relevant.xpath(
                 'descendant::div[contains(@class,"textile")]/descendant::*/text()').extract()
-            content = " ".join([parag.strip(' \t\n\r') for parag in rawContent]).strip(' ')
+            content=" ".join([parag.strip(' \t\n\r')
+                             for parag in rawContent]).strip(' ')
 
             """
             Day when data was fetched
             """
-            createdAt = datetime.datetime.today().strftime('%Y-%m-%d')
+            createdAt=datetime.datetime.today().strftime('%Y-%m-%d')
 
 
 
-            currentPoliceReport = PoliceReport()
-            currentPoliceReport['Title'] = title
-            currentPoliceReport['Header'] = header
-            currentPoliceReport['Content'] = content
-            currentPoliceReport['URL'] = response.url
-            currentPoliceReport['CreatedAt'] = createdAt
-            currentPoliceReport['IsGroup'] = self.isGroup
+            currentPoliceReport=PoliceReport()
+            currentPoliceReport['Title']=title
+            currentPoliceReport['Header']=header
+            currentPoliceReport['Content']=content
+            currentPoliceReport['URL']=response.url
+            currentPoliceReport['CreatedAt']=createdAt
+            currentPoliceReport['IsLocationInHeader']=response.meta['IsLocationInHeader']
             yield currentPoliceReport
