@@ -10,21 +10,17 @@ class GetreportdataSpider(scrapy.Spider):
     Get 'relevant' data from a policereport
 
     Run spider with:
-    > scrapy crawl getreportdata -a filename=policereport-paths.txt
+    > scrapy crawl getreportdata -a filename=one-policereport-paths.txt -a isGroup=false
+    > scrapy crawl getreportdata -a filename=multiple-policereport-paths.txt -a isGroup=true
     """
     name = 'getreportdata'
 
     BASE_URL = 'https://www.berlin.de'
 
-    """
-    Berlin districts as set. Retrieved from: https://www.berlin.de/special/immobilien-und-wohnen/stadtteile/uebersicht-nach-bezirken/ 
-    """
-    BERLIN_DISTRICTS = {'Mitte', 'Friedrichshain-Kreuzberg', 'Pankow', 'Charlottenburg-Wilmersdorf', 'Spandau', 'Steglitz-Zehlendorf',
-                        'Tempelhof-Schöneberg', 'Neukölln', 'Treptow-Köpenick', 'Marzahn-Hellersdorf', 'Lichtenberg', 'Reinickendorf'}
-
     allowed_domains = ['berlin.de']
 
-    def __init__(self, filename=None):
+    def __init__(self, filename, isGroup):
+        self.isGroup = isGroup
         if filename:
             with open(filename, 'r') as fd:
                 policeReportUrls = ["https://www.berlin.de{path}".format(
@@ -32,15 +28,6 @@ class GetreportdataSpider(scrapy.Spider):
                 self.start_urls = policeReportUrls
 
     def parse(self, response):
-
-        urlIdRegex = re.search('pressemitteilung.(\d+).php$', response.url)
-        if urlIdRegex is not None:
-            url = urlIdRegex.group(1)
-        else:
-            print("Couldn't get url id for url=%s" % (response.url))
-            url = response.url
-            with open('urls-no-id.txt', 'a') as fd:
-                fd.write("%s\n" % url)
 
         if response.status != 200:
             with open('urls-not-ok.txt', 'a') as fd:
@@ -60,22 +47,12 @@ class GetreportdataSpider(scrapy.Spider):
                 'descendant::h1[contains(@class,"title")]/text()').extract_first()
 
             """
-            Some police reports are grouped and displayed in one website
-            """
-            listOfIds = relevant.xpath(
-                'descendant::strong/text()').re('^Nr. (\d+)')
-
-            """
             Contains date and location
             """
             policeReportHeader = relevant.xpath(
                 'descendant::div[contains(@class,"polizeimeldung")]/text()').extract()
 
-            dates = sum([re.findall('(\d{2}.\d{2}.\d{4})', line) for line in policeReportHeader if re.match(
-                '.*(\d{2}\.\d{2}\.\d{4}).*', line)], [])
-
-            locationPreparation = set(sum([line.split("/") for line in policeReportHeader],[]))
-            locations = list(locationPreparation & GetreportdataSpider.BERLIN_DISTRICTS)
+            header = " ".join(policeReportHeader) 
 
             """
             Content of police report as one string
@@ -83,21 +60,20 @@ class GetreportdataSpider(scrapy.Spider):
             """
             rawContent = relevant.xpath(
                 'descendant::div[contains(@class,"textile")]/descendant::*/text()').extract()
-            content = " ".join([parag.strip(' \t\n\r') for parag in rawContent if (
-                not(re.match('^Nr. \d+', parag)))]).strip(' ')
+            content = " ".join([parag.strip(' \t\n\r') for parag in rawContent]).strip(' ')
 
             """
             Day when data was fetched
             """
             createdAt = datetime.datetime.today().strftime('%Y-%m-%d')
 
-            for policeReportId in listOfIds:
-                currentPoliceReport = PoliceReport()
-                currentPoliceReport['Id'] = policeReportId
-                currentPoliceReport['Title'] = title
-                currentPoliceReport['Dates'] = dates
-                currentPoliceReport['Locations'] = locations
-                currentPoliceReport['Content'] = content
-                currentPoliceReport['URL'] = url
-                currentPoliceReport['CreatedAt'] = createdAt
-                yield currentPoliceReport
+
+
+            currentPoliceReport = PoliceReport()
+            currentPoliceReport['Title'] = title
+            currentPoliceReport['Header'] = header
+            currentPoliceReport['Content'] = content
+            currentPoliceReport['URL'] = response.url
+            currentPoliceReport['CreatedAt'] = createdAt
+            currentPoliceReport['IsGroup'] = self.isGroup
+            yield currentPoliceReport

@@ -16,10 +16,10 @@ class GetreporturlsSpider(scrapy.Spider):
 
     allowed_domains = ['berlin.de']
     start_urls = [
-        # BASE_URL+'/polizei/polizeimeldungen/archiv/2014/',
-        # BASE_URL+'/polizei/polizeimeldungen/archiv/2015/',
-        # BASE_URL+'/polizei/polizeimeldungen/archiv/2016/',
-        # BASE_URL+'/polizei/polizeimeldungen/archiv/2017/',
+        BASE_URL+'/polizei/polizeimeldungen/archiv/2014/',
+        BASE_URL+'/polizei/polizeimeldungen/archiv/2015/',
+        BASE_URL+'/polizei/polizeimeldungen/archiv/2016/',
+        BASE_URL+'/polizei/polizeimeldungen/archiv/2017/',
         BASE_URL+'/polizei/polizeimeldungen/archiv/2018/'
         ]
 
@@ -30,9 +30,26 @@ class GetreporturlsSpider(scrapy.Spider):
         Example: 
         > path = '/polizei/polizeimeldungen/pressemitteilung.777777.php'
         """
-        policeReportPaths = response.xpath("//ul/li/div/a/@href").extract()
-        with open('policereport-paths.txt', 'a') as fd:
-            for path in policeReportPaths:
+
+        """
+        We split the paths in two categories
+        * onePoliceReportPaths: Each path covers only one police report
+        * multiplePoliceReportPaths: Each path covers multiple police reports 
+
+        And safe them in different files
+        """
+
+        relevant = response.xpath("//div[contains(@class,'html5-section') and contains(@class,'body')]/ul/li")
+
+        onePoliceReportPaths = relevant.xpath("div[span/strong[contains(text(),'Ereignisort')]]/a/@href").extract()
+        multiplePoliceReportPaths =  relevant.xpath("div[not(span)]/a/@href").extract()
+
+
+        with open('one-policereport-paths.txt', 'a') as fd:
+            for path in onePoliceReportPaths:
+                fd.write("%s\n" % path)
+        with open('multiple-policereport-paths.txt', 'a') as fd:
+            for path in multiplePoliceReportPaths:
                 fd.write("%s\n" % path)
         """
         Get next page

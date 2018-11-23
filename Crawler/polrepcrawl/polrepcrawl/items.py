@@ -9,11 +9,10 @@ import scrapy
 
 
 class PoliceReport(scrapy.Item):
-    Id = scrapy.Field()
     Title = scrapy.Field()
-    Dates = scrapy.Field()
-    Locations = scrapy.Field()
+    Header = scrapy.Field()
     Content = scrapy.Field()
+    IsGroup = scrapy.Field()
     URL = scrapy.Field()
     CreatedAt = scrapy.Field()
 
