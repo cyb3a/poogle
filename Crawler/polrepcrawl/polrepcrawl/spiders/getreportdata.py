@@ -10,7 +10,7 @@ class GetreportdataSpider(scrapy.Spider):
     Get 'relevant' data from a policereport
 
     Run spider with:
-    > scrapy crawl getreportdata -a filename=policereport-urlids.txt
+    > scrapy crawl getreportdata -a filename=policereport-paths.txt
     """
     name = 'getreportdata'
 
@@ -27,10 +27,9 @@ class GetreportdataSpider(scrapy.Spider):
     def __init__(self, filename=None):
         if filename:
             with open(filename, 'r') as fd:
-                policeReportUrls = ["https://www.berlin.de/polizei/polizeimeldungen/pressemitteilung.{id}.php".format(
-                    id=urlId) for urlId in fd.read().splitlines()]
+                policeReportUrls = ["https://www.berlin.de{path}".format(
+                    path=policeReportPath) for policeReportPath in fd.read().splitlines()]
                 self.start_urls = policeReportUrls
-                print(policeReportUrls)
 
     def parse(self, response):
 

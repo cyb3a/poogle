@@ -25,16 +25,15 @@ class GetreporturlsSpider(scrapy.Spider):
 
     def parse(self, response):
         """
-        Get police report url ids for each page and write/append to textfile
+        Get police report paths for each page and write/append to textfile
 
         Example: 
-        > From path = '/polizei/polizeimeldungen/pressemitteilung.777777.php'
-        > Get 777777 as police report url id
+        > path = '/polizei/polizeimeldungen/pressemitteilung.777777.php'
         """
-        policeReportUrlIds = response.xpath("//ul/li/div/a/@href").re('^\/polizei\/polizeimeldungen\/pressemitteilung.(\d+).php')
-        with open('policereport-urlids.txt', 'a') as fd:
-            for urlId in policeReportUrlIds:
-                fd.write("%s\n" % urlId)
+        policeReportPaths = response.xpath("//ul/li/div/a/@href").extract()
+        with open('policereport-paths.txt', 'a') as fd:
+            for path in policeReportPaths:
+                fd.write("%s\n" % path)
         """
         Get next page
         """
