@@ -14,6 +14,8 @@ BOT_NAME = 'polrepcrawl'
 SPIDER_MODULES = ['polrepcrawl.spiders']
 NEWSPIDER_MODULE = 'polrepcrawl.spiders'
 
+LOG_LEVEL = 'WARNING'
+LOG_FILE = 'output.log'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'polrepcrawl (+http://www.yourdomain.com)'
